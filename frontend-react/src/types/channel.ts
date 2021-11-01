@@ -8,6 +8,7 @@ export interface IChannel {
   id: string;
   owner: IUser;
   members: IUser[];
+  type?: string;
 }
 
 export interface IFetchChannelParameters {

@@ -1,41 +1,30 @@
+/* eslint-disable react/jsx-one-expression-per-line */
 // material
-import { useEffect } from 'react';
-import { useApolloClient } from '@apollo/client';
 import { Box, Grid, Container, Typography } from '@mui/material';
-import { useDispatch, useSelector } from '../redux/store';
-import { fetchChannelsAsync } from '../redux/slices/channels';
 import useUserConnected from '../hooks/useUserConnected';
 // components
 import Page from '../components/Page';
-import {
-  AppTasks,
-  AppNewUsers,
-  AppBugReports,
-  AppItemOrders,
-  AppNewsUpdate,
-  AppWeeklySales,
-  AppOrderTimeline,
-  AppTrafficBySite,
-} from '../components/_dashboard/app';
+// import {
+//   AppTasks,
+//   AppNewUsers,
+//   AppBugReports,
+//   AppItemOrders,
+//   AppNewsUpdate,
+//   AppWeeklySales,
+//   AppOrderTimeline,
+//   AppTrafficBySite,
+// } from '../components/_dashboard/app';
 
 // ----------------------------------------------------------------------
 
 export default function DashboardApp() {
   const { user } = useUserConnected();
-  const gqlClient = useApolloClient();
-  const dispatch = useDispatch();
-  const channels = useSelector(({ channels }) => channels.channels || []);
-  useEffect(() => {
-    if (channels.length === 0) {
-      dispatch(fetchChannelsAsync({ graphql: gqlClient, userId: user?.id || 0 }));
-    }
-  }, []);
 
   return (
-    <Page title="Dashboard | Minimal-UI">
+    <Page title="Dashboard | Slack Clone">
       <Container maxWidth="xl">
         <Box sx={{ pb: 2 }}>
-          <Typography variant="h4">Hi, Welcome back</Typography>
+          <Typography variant="h4">Hi, Welcome back {user?.username || 'unknown'}</Typography>
         </Box>
         <Box sx={{ pb: 5 }}>
           <Typography variant="subtitle2">Please choose a channel or create one to start chatting</Typography>

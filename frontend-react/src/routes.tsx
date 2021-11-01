@@ -50,6 +50,6 @@ export default function Router(): ReactElement | null {
         { path: '*', element: <Navigate to="/404" /> },
       ],
     },
-    { path: '*', element: <Navigate to="/404" replace /> },
+    { path: '*', element: <Navigate to="/404" /> },
   ]);
 }

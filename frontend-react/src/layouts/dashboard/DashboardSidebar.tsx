@@ -1,5 +1,6 @@
 import PropTypes from 'prop-types';
 import { useEffect } from 'react';
+import { useApolloClient } from '@apollo/client';
 import { Link as RouterLink, useLocation } from 'react-router-dom';
 // material
 import { styled } from '@mui/material/styles';
@@ -12,7 +13,10 @@ import { MHidden } from '../../components/@material-extend';
 //
 import sidebarConfig from './SidebarConfig';
 import account from '../../_mocks_/account';
+import { useDispatch, useSelector } from '../../redux/store';
+import { fetchChannelsAsync } from '../../redux/slices/channels';
 import useUserConnected from '../../hooks/useUserConnected';
+import GroupMenuSection, { getConfigForChannel } from '../../components/GroupMenuSection';
 
 // ----------------------------------------------------------------------
 
@@ -43,6 +47,17 @@ DashboardSidebar.propTypes = {
 export default function DashboardSidebar({ isOpenSidebar, onCloseSidebar }: { [name: string]: any }) {
   const { pathname } = useLocation();
   const { user } = useUserConnected();
+  const gqlClient = useApolloClient();
+  const dispatch = useDispatch();
+  const { channels, channelLoading } = useSelector(({ channels }) => ({
+    channels: channels.channels || [],
+    channelLoading: channels.loading,
+  }));
+  useEffect(() => {
+    if (channels.length === 0) {
+      dispatch(fetchChannelsAsync({ graphql: gqlClient, userId: user?.id || 0 }));
+    }
+  }, []);
 
   useEffect(() => {
     if (isOpenSidebar) {
@@ -80,9 +95,17 @@ export default function DashboardSidebar({ isOpenSidebar, onCloseSidebar }: { [n
         </Link>
       </Box>
 
-      <NavSection navConfig={sidebarConfig} />
-
+      <GroupMenuSection
+        navConfig={getConfigForChannel({ types: ['private', 'public'] }, channels)}
+        title="Channels"
+        loading={channelLoading}
+      />
       <Box sx={{ flexGrow: 1 }} />
+      <GroupMenuSection
+        navConfig={getConfigForChannel({ types: ['direct'] }, channels)}
+        title="Direct messages"
+        loading={channelLoading}
+      />
     </Scrollbar>
   );
 
