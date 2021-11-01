@@ -13,6 +13,7 @@ import store from '../redux/store';
 // Providers
 import { SnackbarProvider } from './Snackbar';
 import UserConnectedProvider from './UserConnected';
+import ModalProvider from './Modal';
 import type { IUser } from '../types/user';
 
 const graphqlLink = createHttpLink({
@@ -42,11 +43,13 @@ const Providers: React.FC<{ children: JSX.Element }> = ({ children }) => (
     <ReduxProvider store={store}>
       <SnackbarProvider>
         <UserConnectedProvider>
-          <ThemeConfig>
-            <ScrollToTop />
-            <GlobalStyles />
-            {children}
-          </ThemeConfig>
+          <ModalProvider>
+            <ThemeConfig>
+              <ScrollToTop />
+              <GlobalStyles />
+              {children}
+            </ThemeConfig>
+          </ModalProvider>
         </UserConnectedProvider>
       </SnackbarProvider>
     </ReduxProvider>

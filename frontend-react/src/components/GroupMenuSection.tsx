@@ -7,12 +7,16 @@ import { NavLink as RouterLink, matchPath, useLocation } from 'react-router-dom'
 import arrowIosForwardFill from '@iconify/icons-eva/arrow-ios-forward-fill';
 import arrowIosDownwardFill from '@iconify/icons-eva/arrow-ios-downward-fill';
 import Typography from '@mui/material/Typography';
+import IconButton from '@mui/material/IconButton';
+import AddIcon from '@iconify/icons-eva/plus-circle-outline';
+import Stack from '@mui/material/Stack';
 // material
 import { alpha, useTheme, styled } from '@mui/material/styles';
 import lockFill from '@iconify/icons-eva/lock-fill';
 import personAddFill from '@iconify/icons-eva/person-add-fill';
 import { Box, List, Collapse, ListItemText, ListItemIcon, ListItemButton } from '@mui/material';
 import { IChannel } from '../types/channel';
+import { IUser } from '../types/user';
 
 // ----------------------------------------------------------------------
 
@@ -157,17 +161,25 @@ export interface GroupMenuProps {
   navConfig: any[];
   title: string;
   loading: boolean;
+  onAdd?: () => void;
   [name: string]: any;
 }
 
-export default function GroupMenuSection({ navConfig, title, loading, ...other }: GroupMenuProps) {
+export default function GroupMenuSection({ navConfig, title, loading, onAdd, ...other }: GroupMenuProps) {
   const { pathname } = useLocation();
   const match = (path: any) => (path ? !!matchPath({ path, end: false }, pathname) : false);
 
   return (
     <Box {...other}>
       <Box sx={{ p: 2 }}>
-        <Typography variant="subtitle1">{title}</Typography>
+        <Stack direction="row" alignItems="center" justifyContent="space-between">
+          <Typography variant="subtitle1">{title}</Typography>
+          {onAdd && (
+            <IconButton aria-label="Add" onClick={onAdd}>
+              <Icon icon={AddIcon} width={22} height={22} />
+            </IconButton>
+          )}
+        </Stack>
       </Box>
       {loading && (
         <Box sx={{ width: '100%', p: 2 }}>
@@ -191,12 +203,29 @@ export interface ConfigForChannelParam {
 
 const getIcon = (name: any) => <Icon icon={name} width={22} height={22} />;
 
-export const getConfigForChannel = (config: ConfigForChannelParam, channels: IChannel[]) => {
+export const getConfigForChannel = (config: ConfigForChannelParam, channels: IChannel[], connectedUser: IUser) => {
   const relatedChannels = channels.filter((channel: IChannel) => config.types.includes(channel?.type || 'nochannel'));
 
   return relatedChannels.map((channel) => ({
-    title: channel.name,
+    title: getChannelTitle(channel, connectedUser),
     path: `/dashboard/channel/${channel.id}`,
     icon: getIcon(channel.type === 'direct' ? personAddFill : lockFill),
   }));
+};
+
+export const getChannelTitle = (channel: IChannel, connectedUser: IUser): string => {
+  if (channel.type === 'direct') {
+    if (channel.members.length === 1 && channel.members[0].id === connectedUser.id) {
+      return `${connectedUser.username} (to myself)`;
+    }
+
+    if (channel.members.length === 2) {
+      const otherUser: IUser = channel.members.filter((u) => u.id !== connectedUser.id)[0];
+      return otherUser.username;
+    }
+
+    return channel.name;
+  }
+
+  return channel.name;
 };

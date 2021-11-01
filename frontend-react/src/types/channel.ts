@@ -15,3 +15,12 @@ export interface IFetchChannelParameters {
   graphql: ApolloClient<object>;
   userId: string | number;
 }
+
+export interface ICreateChannelParameters {
+  graphql: ApolloClient<object>;
+  name: string;
+  description?: string;
+  owner: string;
+  members: string[];
+  type?: string;
+}

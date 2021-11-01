@@ -2,7 +2,7 @@
 /* eslint-disable @typescript-eslint/indent */
 import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { RootState, AppThunk } from '../store';
-import { login, register } from '../../api/login';
+import { login, register, fetchUsers } from '../../api/login';
 import type { IUser } from '../../types/user';
 
 export interface AppState {
@@ -10,6 +10,8 @@ export interface AppState {
   loginLoading: boolean;
   user?: IUser;
   registerLoading: boolean;
+  users?: IUser[];
+  usersFetchLoading: boolean;
 }
 
 const initialState: AppState = {
@@ -17,10 +19,13 @@ const initialState: AppState = {
   loginLoading: false,
   user: undefined,
   registerLoading: false,
+  users: [],
+  usersFetchLoading: false,
 };
 
 export const requestLoginAsync = createAsyncThunk('app/login', login);
 export const requestRegisterAsync = createAsyncThunk('app/register', register);
+export const fetchUsersAsync = createAsyncThunk('app/users/fetch', fetchUsers);
 
 // The function below is called a thunk and allows us to perform async logic. It
 // can be dispatched like a regular action: `dispatch(incrementAsync(10))`. This
@@ -75,6 +80,20 @@ export const appSlice = createSlice({
       })
       .addCase(requestRegisterAsync.rejected, (state, action) => {
         state.registerLoading = false;
+        console.log(action);
+      })
+
+      // Handle all users fetch
+      .addCase(fetchUsersAsync.pending, (state) => {
+        state.usersFetchLoading = true;
+      })
+      .addCase(fetchUsersAsync.fulfilled, (state, action) => {
+        state.usersFetchLoading = false;
+        state.users = action?.payload?.users || [];
+        console.log(action);
+      })
+      .addCase(fetchUsersAsync.rejected, (state, action) => {
+        state.usersFetchLoading = false;
         console.log(action);
       });
   },

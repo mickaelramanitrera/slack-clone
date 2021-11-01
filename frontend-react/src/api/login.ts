@@ -1,5 +1,5 @@
 import { gql } from '@apollo/client';
-import type { ILoginParameters, IRegisterParamerets } from '../types/user';
+import type { ILoginParameters, IRegisterParamerets, IFetchUsersParameters } from '../types/user';
 
 export const login = async ({ username, password, graphql }: ILoginParameters): Promise<any> => {
   const results = await graphql.mutate({
@@ -50,6 +50,22 @@ export const register = async ({ username, password, email, graphql }: IRegister
         email,
       },
     },
+  });
+
+  return results.data;
+};
+
+export const fetchUsers = async ({ graphql }: IFetchUsersParameters): Promise<any> => {
+  const results = await graphql.query({
+    query: gql`
+      query FetchUsers {
+        users {
+          id
+          username
+          email
+        }
+      }
+    `,
   });
 
   return results.data;

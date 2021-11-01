@@ -3,7 +3,7 @@
 import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { RootState, AppThunk } from '../store';
 import type { IChannel } from '../../types/channel';
-import { fetchChannels } from '../../api/channel';
+import { fetchChannels, createChannel } from '../../api/channel';
 
 export interface ChannelState {
   channels: IChannel[];
@@ -16,6 +16,7 @@ const initialState: ChannelState = {
 };
 
 export const fetchChannelsAsync = createAsyncThunk('channels/fetch', fetchChannels);
+export const createChannelAsync = createAsyncThunk('channels/create', createChannel);
 
 // The function below is called a thunk and allows us to perform async logic. It
 // can be dispatched like a regular action: `dispatch(incrementAsync(10))`. This
@@ -56,6 +57,17 @@ export const channelSlice = createSlice({
         state.channels = action?.payload?.channels || [];
       })
       .addCase(fetchChannelsAsync.rejected, (state, action) => {
+        state.loading = false;
+        console.log(action);
+      })
+      .addCase(createChannelAsync.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(createChannelAsync.fulfilled, (state, action) => {
+        state.loading = false;
+        state.channels = Array.from([...state.channels, action?.payload?.createChannel.channel]);
+      })
+      .addCase(createChannelAsync.rejected, (state, action) => {
         state.loading = false;
         console.log(action);
       });

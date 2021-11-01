@@ -20,7 +20,7 @@ export interface IUser {
   id: string;
   username: string;
   email: string;
-  role: IUserRole;
+  role?: IUserRole;
   jwt?: string;
 }
 
@@ -29,3 +29,5 @@ export interface IRegisterParamerets extends IWithGql {
   password: string;
   email: string;
 }
+
+export interface IFetchUsersParameters extends IWithGql {}
