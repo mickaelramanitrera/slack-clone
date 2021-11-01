@@ -12,4 +12,5 @@ export interface IChannel {
 
 export interface IFetchChannelParameters {
   graphql: ApolloClient<object>;
+  userId: string | number;
 }

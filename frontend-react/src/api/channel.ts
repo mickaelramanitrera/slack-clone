@@ -1,11 +1,11 @@
 import { gql } from '@apollo/client';
 import { IFetchChannelParameters } from '../types/channel';
 
-export const fetchChannels = async ({ graphql }: IFetchChannelParameters): Promise<any> => {
+export const fetchChannels = async ({ graphql, userId }: IFetchChannelParameters): Promise<any> => {
   const results = await graphql.query({
     query: gql`
-      query FetchChannels {
-        channels {
+      query FetchChannels($whereFilter: JSON) {
+        channels(where: $whereFilter) {
           id
           name
           description
@@ -23,6 +23,9 @@ export const fetchChannels = async ({ graphql }: IFetchChannelParameters): Promi
         }
       }
     `,
+    variables: {
+      whereFilters: { members: { id: userId } },
+    },
   });
 
   return results.data;

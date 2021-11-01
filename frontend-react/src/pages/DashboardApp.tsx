@@ -4,6 +4,7 @@ import { useApolloClient } from '@apollo/client';
 import { Box, Grid, Container, Typography } from '@mui/material';
 import { useDispatch, useSelector } from '../redux/store';
 import { fetchChannelsAsync } from '../redux/slices/channels';
+import useUserConnected from '../hooks/useUserConnected';
 // components
 import Page from '../components/Page';
 import {
@@ -20,12 +21,13 @@ import {
 // ----------------------------------------------------------------------
 
 export default function DashboardApp() {
+  const { user } = useUserConnected();
   const gqlClient = useApolloClient();
   const dispatch = useDispatch();
   const channels = useSelector(({ channels }) => channels.channels || []);
   useEffect(() => {
     if (channels.length === 0) {
-      dispatch(fetchChannelsAsync({ graphql: gqlClient }));
+      dispatch(fetchChannelsAsync({ graphql: gqlClient, userId: user?.id || 0 }));
     }
   }, []);
 
