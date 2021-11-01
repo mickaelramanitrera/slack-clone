@@ -5,7 +5,7 @@ import { Box } from '@mui/material';
 
 // ----------------------------------------------------------------------
 
-const Page: FC<{ title: string }> = forwardRef(({ children, title = '', ...other }, ref) => (
+const Page: FC<{ [name: string]: any }> = forwardRef(({ children, title = '', ...other }, ref) => (
   <Box ref={ref} {...other}>
     <Helmet>
       <title>{title}</title>
