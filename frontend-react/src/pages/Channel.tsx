@@ -71,7 +71,7 @@ export default () => {
                       from={message?.from || null}
                       key={`message-${index}`}
                       content={message?.content || ''}
-                      position="right"
+                      position={message?.from?.id === user?.id ? 'right' : 'left'}
                     />
                   ))}
                 </Stack>
