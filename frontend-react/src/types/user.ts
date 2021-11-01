@@ -10,7 +10,7 @@ export interface ILoginParameters {
 export interface IUserRole {
   id: string;
   name: string;
-  description: string;
+  description?: string;
 }
 
 export interface IUser {
@@ -18,4 +18,5 @@ export interface IUser {
   username: string;
   email: string;
   role: IUserRole;
+  jwt?: string;
 }

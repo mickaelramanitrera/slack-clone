@@ -8,9 +8,11 @@ export const login = async ({ username, password, graphql }: ILoginParameters): 
         login(input: $loginInput) {
           jwt
           user {
+            id
             username
             email
             role {
+              id
               name
             }
           }

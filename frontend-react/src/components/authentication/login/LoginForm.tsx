@@ -12,6 +12,7 @@ import { LoadingButton } from '@mui/lab';
 import { useDispatch } from '../../../redux/store';
 import { requestLoginAsync } from '../../../redux/slices/app';
 import useSnackbar from '../../../hooks/useSnackbar';
+import useUserConnected from '../../../hooks/useUserConnected';
 
 // ----------------------------------------------------------------------
 
@@ -21,6 +22,7 @@ export default function LoginForm() {
   const gclient = useApolloClient();
   const dispatch = useDispatch();
   const { openAlert, closeAlert } = useSnackbar();
+  const { user, setUser, clearUser } = useUserConnected();
 
   const LoginSchema = Yup.object().shape({
     email: Yup.string().required('Username is required'),
@@ -42,12 +44,19 @@ export default function LoginForm() {
           graphql: gclient,
         })
       );
-      if ((response as any).error) {
-        openAlert((response as any).error.message, 'error');
+      const { error, payload } = response as any;
+      if (error) {
+        const errorMessage =
+          error?.message === 'Bad Request'
+            ? 'Username / password is wrong'
+            : error?.message || 'Unexpected error on login';
+        openAlert(errorMessage, 'error');
+        clearUser();
       } else {
         openAlert('Login successfully', 'success');
+        setUser({ ...(payload?.login?.user || {}), jwt: payload?.login?.jwt || '' });
+        navigate('/dashboard/app', { replace: true });
       }
-      // navigate('/dashboard', { replace: true });
     },
   });
 

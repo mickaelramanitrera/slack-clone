@@ -8,22 +8,29 @@ import Register from './pages/Register';
 import DashboardApp from './pages/DashboardApp';
 import NotFound from './pages/Page404';
 
+import useUserConnected from './hooks/useUserConnected';
+
 interface Props {
   element: any;
   children?: any;
 }
 
 function ProtectedElement({ element }: Props) {
-  const isLoggedIn = false;
+  const { user } = useUserConnected();
+  console.log('user connected', user);
+  return user !== undefined ? element : <Navigate to="/login" replace />;
+}
 
-  return isLoggedIn ? element : <Navigate to="/login" replace />;
+function SmartLogin({ element }: Props) {
+  const { user } = useUserConnected();
+  return user !== undefined ? <Navigate to="/dashboard/app" replace /> : element;
 }
 
 export default function Router(): ReactElement | null {
   return useRoutes([
     {
       path: '/dashboard',
-      element: <ProtectedElement element={<DashboardLayout />} />,
+      element: <DashboardLayout />,
       children: [
         { element: <Navigate to="/dashboard/app" replace /> },
         {
@@ -36,10 +43,10 @@ export default function Router(): ReactElement | null {
       path: '/',
       element: <LogoOnlyLayout />,
       children: [
-        { path: 'login', element: <Login /> },
+        { path: 'login', element: <SmartLogin element={<Login />} /> },
         { path: 'register', element: <Register /> },
         { path: '404', element: <NotFound /> },
-        { path: '/', element: <Navigate to="/dashboard" replace /> },
+        { path: '/', element: <ProtectedElement element={<Navigate to="/dashboard/app" replace />} /> },
         { path: '*', element: <Navigate to="/404" /> },
       ],
     },
