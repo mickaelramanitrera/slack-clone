@@ -7,6 +7,7 @@ import Login from './pages/Login';
 import Register from './pages/Register';
 import DashboardApp from './pages/DashboardApp';
 import NotFound from './pages/Page404';
+import Channel from './pages/Channel';
 
 import useUserConnected from './hooks/useUserConnected';
 
@@ -17,7 +18,6 @@ interface Props {
 
 function ProtectedElement({ element }: Props) {
   const { user } = useUserConnected();
-  console.log('user connected', user);
   return user !== undefined ? element : <Navigate to="/login" replace />;
 }
 
@@ -36,6 +36,10 @@ export default function Router(): ReactElement | null {
         {
           path: 'app',
           element: <ProtectedElement element={<DashboardApp />} />,
+        },
+        {
+          path: 'channel/:id',
+          element: <ProtectedElement element={<Channel />} />,
         },
       ],
     },
