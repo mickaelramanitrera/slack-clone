@@ -1,10 +1,13 @@
 /* eslint-disable @typescript-eslint/ban-types */
-import { ApolloClient, InMemoryCache } from '@apollo/client';
+import { ApolloClient } from '@apollo/client';
 
-export interface ILoginParameters {
+export interface IWithGql {
+  graphql: ApolloClient<object>;
+}
+
+export interface ILoginParameters extends IWithGql {
   username: string;
   password: string;
-  graphql: ApolloClient<object>;
 }
 
 export interface IUserRole {
@@ -19,4 +22,10 @@ export interface IUser {
   email: string;
   role: IUserRole;
   jwt?: string;
+}
+
+export interface IRegisterParamerets extends IWithGql {
+  username: string;
+  password: string;
+  email: string;
 }

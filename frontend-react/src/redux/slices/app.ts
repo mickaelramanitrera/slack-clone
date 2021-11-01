@@ -2,22 +2,25 @@
 /* eslint-disable @typescript-eslint/indent */
 import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { RootState, AppThunk } from '../store';
-import { login } from '../../api/login';
+import { login, register } from '../../api/login';
 import type { IUser } from '../../types/user';
 
 export interface AppState {
   loginStatus: 'loggedIn' | 'loggedOut';
   loginLoading: boolean;
   user?: IUser;
+  registerLoading: boolean;
 }
 
 const initialState: AppState = {
   loginStatus: 'loggedOut',
   loginLoading: false,
   user: undefined,
+  registerLoading: false,
 };
 
 export const requestLoginAsync = createAsyncThunk('app/login', login);
+export const requestRegisterAsync = createAsyncThunk('app/register', register);
 
 // The function below is called a thunk and allows us to perform async logic. It
 // can be dispatched like a regular action: `dispatch(incrementAsync(10))`. This
@@ -59,6 +62,19 @@ export const appSlice = createSlice({
       })
       .addCase(requestLoginAsync.rejected, (state, action) => {
         state.loginLoading = false;
+        console.log(action);
+      })
+
+      // Handle registration
+      .addCase(requestRegisterAsync.pending, (state) => {
+        state.registerLoading = true;
+      })
+      .addCase(requestRegisterAsync.fulfilled, (state, action) => {
+        state.registerLoading = false;
+        console.log(action);
+      })
+      .addCase(requestRegisterAsync.rejected, (state, action) => {
+        state.registerLoading = false;
         console.log(action);
       });
   },
