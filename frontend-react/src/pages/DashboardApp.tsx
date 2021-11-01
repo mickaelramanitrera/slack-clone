@@ -1,5 +1,9 @@
 // material
+import { useEffect } from 'react';
+import { useApolloClient } from '@apollo/client';
 import { Box, Grid, Container, Typography } from '@mui/material';
+import { useDispatch, useSelector } from '../redux/store';
+import { fetchChannelsAsync } from '../redux/slices/channels';
 // components
 import Page from '../components/Page';
 import {
@@ -16,6 +20,15 @@ import {
 // ----------------------------------------------------------------------
 
 export default function DashboardApp() {
+  const gqlClient = useApolloClient();
+  const dispatch = useDispatch();
+  const channels = useSelector(({ channels }) => channels.channels || []);
+  useEffect(() => {
+    if (channels.length === 0) {
+      dispatch(fetchChannelsAsync({ graphql: gqlClient }));
+    }
+  }, []);
+
   return (
     <Page title="Dashboard | Minimal-UI">
       <Container maxWidth="xl">
