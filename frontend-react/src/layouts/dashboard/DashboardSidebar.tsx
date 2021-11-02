@@ -72,11 +72,17 @@ export default function DashboardSidebar({ isOpenSidebar, onCloseSidebar }: { [n
     channelLoading: channels.loading,
     users: app.users || [],
   }));
-  async function handleRealtimeNewMessage() {
-    console.log(id);
-    if (id) {
+  async function handleRealtime(data: any) {
+    // Handle new messages
+    if (id && data.type === 'create') {
       await dispatch(fetchMessagesThunk({ graphql: gqlClient, channelId: id }));
       scrollToBottomOfMessages();
+    }
+
+    // Handle new channels
+    if (data.type === 'new') {
+      console.log('Will dispatch channel');
+      await dispatch(fetchChannelsAsync({ graphql: gqlClient, userId: user?.id || 0 }));
     }
   }
   useEffect(() => {
@@ -88,7 +94,7 @@ export default function DashboardSidebar({ isOpenSidebar, onCloseSidebar }: { [n
   useEffect(() => {
     clearListeners('/channel/*');
     if (channels.length > 0) {
-      listenTo('/channel/*', handleRealtimeNewMessage);
+      listenTo('/channel/*', handleRealtime);
     }
     setTimeout(() => {
       scrollToBottomOfMessages();
@@ -113,9 +119,9 @@ export default function DashboardSidebar({ isOpenSidebar, onCloseSidebar }: { [n
   }, [pathname]);
 
   const renderContent = (
-    <Scrollbar
+    <Box
       sx={{
-        height: '100%',
+        height: '100vh%',
         '& .simplebar-content': { height: '100%', display: 'flex', flexDirection: 'column' },
       }}
     >
@@ -153,7 +159,7 @@ export default function DashboardSidebar({ isOpenSidebar, onCloseSidebar }: { [n
         title="Direct messages"
         loading={channelLoading}
       />
-    </Scrollbar>
+    </Box>
   );
 
   return (

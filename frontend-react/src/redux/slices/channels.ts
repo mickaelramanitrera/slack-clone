@@ -65,7 +65,7 @@ export const channelSlice = createSlice({
       })
       .addCase(createChannelAsync.fulfilled, (state, action) => {
         state.loading = false;
-        state.channels = Array.from([...state.channels, action?.payload?.createChannel.channel]);
+        // state.channels = Array.from([...state.channels, action?.payload?.createChannel.channel]);
       })
       .addCase(createChannelAsync.rejected, (state, action) => {
         state.loading = false;
