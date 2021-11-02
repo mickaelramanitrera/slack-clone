@@ -1,0 +1,33 @@
+version: '3.1'
+
+services:
+  db:
+    image: postgres
+    ports:
+      - '5432:5432'
+    environment:
+      POSTGRES_PASSWORD: 'test'
+      POSTGRES_USER: 'test'
+      POSTGRES_DB: 'db'
+    volumes:
+      - ./cleandb.sql:/docker-entrypoint-initdb.d/cleandb.sql
+  frontend:
+    image: mickaelramanitrera/slack-clone
+    ports:
+      - '3000:3000'
+    depends_on:
+      - 'backend'
+  backend:
+    image: mickaelramanitrera/slack-clone-backend
+    ports:
+      - '1337:1337'
+    environment:
+      REALTIME_SERVER: http://realtime:18080/io
+      DATABASE_HOST: db
+    depends_on:
+      - 'db'
+      - 'realtime'
+  realtime:
+    image: mickaelramanitrera/slack-clone-realtime
+    ports:
+      - '18080:18080'
