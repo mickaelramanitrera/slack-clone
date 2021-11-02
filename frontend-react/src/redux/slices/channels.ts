@@ -1,3 +1,4 @@
+/* eslint-disable no-param-reassign */
 /* eslint-disable implicit-arrow-linebreak */
 /* eslint-disable @typescript-eslint/indent */
 import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
@@ -30,6 +31,9 @@ export const channelSlice = createSlice({
   initialState,
   // The `reducers` field lets us define reducers and generate associated actions
   reducers: {
+    clearState: (state) => {
+      state.channels = [];
+    },
     // increment: (state) => {
     //   // Redux Toolkit allows us to write "mutating" logic in reducers. It
     //   // doesn't actually mutate the state because it uses the Immer library,
@@ -74,7 +78,7 @@ export const channelSlice = createSlice({
   },
 });
 
-// export const { increment, decrement, incrementByAmount } = appSlice.actions;
+export const { clearState } = channelSlice.actions;
 
 // The function below is called a selector and allows us to select a value from
 // the state. Selectors can also be defined inline where they're used instead of

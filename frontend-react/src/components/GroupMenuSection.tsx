@@ -203,25 +203,57 @@ export interface ConfigForChannelParam {
 
 const getIcon = (name: any) => <Icon icon={name} width={22} height={22} />;
 
-export const getConfigForChannel = (config: ConfigForChannelParam, channels: IChannel[], connectedUser: IUser) => {
+export const getConfigForChannel = (
+  config: ConfigForChannelParam,
+  channels: IChannel[],
+  connectedUser: IUser,
+  connectedUsers: any
+) => {
   const relatedChannels = channels.filter((channel: IChannel) => config.types.includes(channel?.type || 'nochannel'));
 
   return relatedChannels.map((channel) => ({
-    title: getChannelTitle(channel, connectedUser),
+    title: getChannelTitle(channel, connectedUser, connectedUsers),
     path: `/dashboard/channel/${channel.id}`,
     icon: getIcon(channel.type === 'direct' ? personAddFill : lockFill),
   }));
 };
 
-export const getChannelTitle = (channel: IChannel, connectedUser: IUser): string => {
+export const getChannelTitle = (
+  channel: IChannel,
+  connectedUser: IUser | undefined,
+  connectedUsers: any,
+  toString = false
+): any => {
+  const wrapWithConnectedStatus = (name: string, id: any) => {
+    let connected = false;
+    if (connectedUsers[id]) {
+      const diffInSeconds = Math.abs((new Date().getTime() - connectedUsers[id]) / 1000);
+      connected = diffInSeconds < 15;
+    }
+
+    return (
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <div>{name}</div>
+        <div
+          style={{
+            height: '12px',
+            width: '12px',
+            borderRadius: '20px',
+            backgroundColor: connected ? 'green' : 'gray',
+          }}
+        />
+      </div>
+    );
+  };
+
   if (channel.type === 'direct') {
-    if (channel.members.length === 1 && channel.members[0].id === connectedUser.id) {
-      return `${connectedUser.username} (to myself)`;
+    if (channel.members.length === 1 && channel.members[0].id === connectedUser?.id) {
+      return `${connectedUser?.username} (to myself)`;
     }
 
     if (channel.members.length === 2) {
-      const otherUser: IUser = channel.members.filter((u) => u.id !== connectedUser.id)[0];
-      return otherUser.username;
+      const otherUser: IUser = channel.members.filter((u) => u.id !== connectedUser?.id)[0];
+      return !toString ? wrapWithConnectedStatus(otherUser.username, otherUser.id) : otherUser.username;
     }
 
     return channel.name;

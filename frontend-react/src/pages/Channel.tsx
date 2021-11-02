@@ -39,7 +39,7 @@ export default () => {
     enableReinitialize: true,
     validationSchema: MessageSchema,
     onSubmit: async (values) => {
-      console.log(values);
+      // console.log(values);
       const results = await dispatch(
         createMessageThunk({
           ...values,
@@ -49,7 +49,7 @@ export default () => {
       setFieldValue('content', '');
       setFieldTouched('content', false);
 
-      console.log('Results', results);
+      // console.log('Results', results);
     },
   });
   const { errors, touched, values, isSubmitting, handleSubmit, getFieldProps, setFieldValue, setFieldTouched } = formik;

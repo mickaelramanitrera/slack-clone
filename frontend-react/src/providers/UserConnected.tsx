@@ -4,7 +4,7 @@ import { reactLocalStorage } from 'reactjs-localstorage';
 import type { IUser } from '../types/user';
 
 (window as any).listeners = {};
-(window as any).Faye.logger = (window as any).console;
+// (window as any).Faye.logger = (window as any).console;
 (window as any).fayeClient = new (window as any).Faye.Client(process.env.REACT_APP_REALTIME_SERVER || '');
 
 export interface UserConnectedContextValue {
@@ -28,7 +28,7 @@ export const UserConnectedProvider: React.FC = ({ children }) => {
 
   React.useEffect(() => {
     const userConnected = reactLocalStorage.getObject('user');
-    console.log('In use effect', userConnected);
+    // console.log('In use effect', userConnected);
     if (userConnected !== undefined && (userConnected as IUser)?.username) {
       setUser(userConnected as IUser);
     }
@@ -58,7 +58,7 @@ export const UserConnectedProvider: React.FC = ({ children }) => {
           //   // }
           // });
           if ((window as any).listeners[name] && typeof (window as any).listeners[name].cancel === 'function') {
-            console.log('WIll cancel');
+            // console.log('WIll cancel');
             (window as any).listeners[name].cancel();
           }
         },

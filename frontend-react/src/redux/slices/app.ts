@@ -1,3 +1,4 @@
+/* eslint-disable no-param-reassign */
 /* eslint-disable implicit-arrow-linebreak */
 /* eslint-disable @typescript-eslint/indent */
 import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
@@ -12,6 +13,7 @@ export interface AppState {
   registerLoading: boolean;
   users?: IUser[];
   usersFetchLoading: boolean;
+  connectedUsers: any;
 }
 
 const initialState: AppState = {
@@ -21,6 +23,7 @@ const initialState: AppState = {
   registerLoading: false,
   users: [],
   usersFetchLoading: false,
+  connectedUsers: {},
 };
 
 export const requestLoginAsync = createAsyncThunk('app/login', login);
@@ -39,6 +42,14 @@ export const appSlice = createSlice({
   initialState,
   // The `reducers` field lets us define reducers and generate associated actions
   reducers: {
+    setConnected: (state, action: PayloadAction<{ timestamp: any; id: any }>) => {
+      state.connectedUsers[action.payload.id] = action.payload.timestamp;
+    },
+    clearState: (state) => {
+      state.user = undefined;
+      state.users = [];
+      state.connectedUsers = {};
+    },
     // increment: (state) => {
     //   // Redux Toolkit allows us to write "mutating" logic in reducers. It
     //   // doesn't actually mutate the state because it uses the Immer library,
@@ -99,7 +110,7 @@ export const appSlice = createSlice({
   },
 });
 
-// export const { increment, decrement, incrementByAmount } = appSlice.actions;
+export const { setConnected, clearState } = appSlice.actions;
 
 // The function below is called a selector and allows us to select a value from
 // the state. Selectors can also be defined inline where they're used instead of

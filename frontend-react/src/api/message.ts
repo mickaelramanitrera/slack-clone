@@ -28,7 +28,7 @@ export const fetchMessages = async ({ graphql, channelId }: IFetchMessageParams)
       },
     },
   });
-  console.log(results.data);
+  // console.log(results.data);
 
   return results.data;
 };

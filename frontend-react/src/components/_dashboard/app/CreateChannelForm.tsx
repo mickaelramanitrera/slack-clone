@@ -57,7 +57,7 @@ export default () => {
       };
 
       const response: any = await dispatch(createChannelAsync(payload));
-      console.log(response);
+      // console.log(response);
       closeModal();
     },
   });

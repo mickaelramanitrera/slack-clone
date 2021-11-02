@@ -10,6 +10,10 @@ import { alpha } from '@mui/material/styles';
 import { Button, Box, Divider, MenuItem, Typography, Avatar, IconButton } from '@mui/material';
 // components
 import MenuPopover from '../../components/MenuPopover';
+import { useDispatch } from '../../redux/store';
+import { clearState as cleanAppState } from '../../redux/slices/app';
+import { clearState as cleanChannelState } from '../../redux/slices/channels';
+import { clearState as cleanMessageState } from '../../redux/slices/messages';
 //
 import account from '../../_mocks_/account';
 import useUserConnected from '../../hooks/useUserConnected';
@@ -41,6 +45,7 @@ export default function AccountPopover() {
   const [open, setOpen] = useState(false);
   const { clearUser, user } = useUserConnected();
   const navigateTo = useNavigate();
+  const dispatch = useDispatch();
 
   const handleOpen = () => {
     setOpen(true);
@@ -117,6 +122,9 @@ export default function AccountPopover() {
             onClick={() => {
               clearUser();
               navigateTo('/login');
+              dispatch(cleanMessageState());
+              dispatch(cleanAppState());
+              dispatch(cleanChannelState());
             }}
           >
             Logout

@@ -1,3 +1,4 @@
+/* eslint-disable prefer-template */
 /* eslint-disable func-names */
 /* eslint-disable prefer-arrow-callback */
 /* eslint-disable function-paren-newline */
@@ -17,13 +18,14 @@ import { MHidden } from '../../components/@material-extend';
 //
 import sidebarConfig from './SidebarConfig';
 import account from '../../_mocks_/account';
+import useSnackbar from '../../hooks/useSnackbar';
 import { useDispatch, useSelector } from '../../redux/store';
-import { fetchUsersAsync } from '../../redux/slices/app';
+import { fetchUsersAsync, setConnected as setConnectedAction } from '../../redux/slices/app';
 import { fetchChannelsAsync } from '../../redux/slices/channels';
 import useUserConnected from '../../hooks/useUserConnected';
 import useModal from '../../hooks/useModal';
 import CreateChannelForm from '../../components/_dashboard/app/CreateChannelForm';
-import GroupMenuSection, { getConfigForChannel } from '../../components/GroupMenuSection';
+import GroupMenuSection, { getConfigForChannel, getChannelTitle } from '../../components/GroupMenuSection';
 import { fetchMessagesThunk } from '../../redux/slices/messages';
 import { IUser } from '../../types/user';
 
@@ -64,31 +66,59 @@ export default function DashboardSidebar({ isOpenSidebar, onCloseSidebar }: { [n
   const { pathname } = useLocation();
   const { id } = useParams();
   const { user, listenTo, clearListeners } = useUserConnected();
+  const { openAlert } = useSnackbar();
   const gqlClient = useApolloClient();
   const { openModal, closeModal } = useModal();
   const dispatch = useDispatch();
-  const { channels, channelLoading, users } = useSelector(({ channels, app }) => ({
+  const { channels, channelLoading, users, connectedUsers } = useSelector(({ channels, app }) => ({
     channels: channels.channels || [],
     channelLoading: channels.loading,
     users: app.users || [],
+    connectedUsers: app.connectedUsers || {},
   }));
   async function handleRealtime(data: any) {
+    const channel = channels.filter((chan) => parseInt(chan.id, 10) === data.data?.channel?.id)[0];
+    const channelName = channel
+      ? getChannelTitle(channel, user, connectedUsers, true)
+      : data.data?.channel?.name || data.data?.name || '';
     // Handle new messages
-    if (id && data.type === 'create') {
-      await dispatch(fetchMessagesThunk({ graphql: gqlClient, channelId: id }));
-      scrollToBottomOfMessages();
+    if (data.type === 'create') {
+      if (id) {
+        await dispatch(fetchMessagesThunk({ graphql: gqlClient, channelId: id }));
+        scrollToBottomOfMessages();
+      }
+      openAlert(`New mesage in ${channelName}`, 'success');
     }
 
-    // Handle new channels
+    // Handle new channel
     if (data.type === 'new') {
-      console.log('Will dispatch channel');
-      await dispatch(fetchChannelsAsync({ graphql: gqlClient, userId: user?.id || 0 }));
+      dispatch(fetchUsersAsync({ graphql: gqlClient }));
+      dispatch(fetchChannelsAsync({ graphql: gqlClient, userId: user?.id || 0 }));
+      openAlert('New channel', 'success');
     }
   }
   useEffect(() => {
     if (channels.length === 0) {
       dispatch(fetchChannelsAsync({ graphql: gqlClient, userId: user?.id || 0 }));
     }
+  }, []);
+  useEffect(() => {
+    const beatHeart = () => {
+      const publication = (window as any).fayeClient.publish(`/heartbeat/${user?.id || 0}`, {
+        type: 'heartbeat',
+        // data: user || {},
+        id: user?.id || 0,
+        timestamp: new Date().getTime(),
+      });
+    };
+
+    beatHeart();
+    // Handle heartbeat
+    (window as any).heartbeatLoop = setInterval(() => {
+      beatHeart();
+    }, 1000 * 10);
+
+    return () => clearInterval((window as any).heartbeatLoop);
   }, []);
 
   useEffect(() => {
@@ -101,7 +131,23 @@ export default function DashboardSidebar({ isOpenSidebar, onCloseSidebar }: { [n
     }, 500);
 
     return () => {
-      clearListeners();
+      clearListeners('/channel/*');
+    };
+  }, [channels, id]);
+
+  useEffect(() => {
+    clearListeners('/heartbeat/*');
+
+    listenTo('/heartbeat/*', function (data: any) {
+      dispatch(
+        setConnectedAction({
+          id: data.id,
+          timestamp: data.timestamp,
+        })
+      );
+    });
+    return () => {
+      clearListeners('/heartbeat/*');
     };
   }, [channels, id]);
 
@@ -148,14 +194,14 @@ export default function DashboardSidebar({ isOpenSidebar, onCloseSidebar }: { [n
       </Box>
 
       <GroupMenuSection
-        navConfig={getConfigForChannel({ types: ['private', 'public'] }, channels, user as IUser)}
+        navConfig={getConfigForChannel({ types: ['private', 'public'] }, channels, user as IUser, connectedUsers)}
         title="Channels"
         loading={channelLoading}
         onAdd={() => openModal(<CreateChannelForm />)}
       />
       <Box sx={{ flexGrow: 1 }} />
       <GroupMenuSection
-        navConfig={getConfigForChannel({ types: ['direct'] }, channels, user as IUser)}
+        navConfig={getConfigForChannel({ types: ['direct'] }, channels, user as IUser, connectedUsers)}
         title="Direct messages"
         loading={channelLoading}
       />
