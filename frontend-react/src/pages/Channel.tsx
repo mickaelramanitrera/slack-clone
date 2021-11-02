@@ -64,7 +64,7 @@ export default () => {
                 <Typography variant="h4">{channel?.name || 'Default Channel'}</Typography>
               </Box>
               <Box sx={{ py: 2 }} style={{ flexGrow: 2 }}>
-                <Stack spacing={4} style={{ overflowY: 'auto', maxHeight: '66vh' }}>
+                <Stack spacing={4} style={{ overflowY: 'auto', maxHeight: '61vh' }} id="screen-message">
                   {loading && <LinearProgress />}
                   {messages.map((message, index) => (
                     <Message

@@ -1,7 +1,11 @@
+/* eslint-disable func-names */
+/* eslint-disable prefer-arrow-callback */
+/* eslint-disable function-paren-newline */
+/* eslint-disable implicit-arrow-linebreak */
 import PropTypes from 'prop-types';
 import { useEffect } from 'react';
 import { useApolloClient } from '@apollo/client';
-import { Link as RouterLink, useLocation } from 'react-router-dom';
+import { Link as RouterLink, useLocation, useParams } from 'react-router-dom';
 // material
 import { styled } from '@mui/material/styles';
 import { Box, Link, Button, Drawer, Typography, Avatar, Stack } from '@mui/material';
@@ -20,6 +24,7 @@ import useUserConnected from '../../hooks/useUserConnected';
 import useModal from '../../hooks/useModal';
 import CreateChannelForm from '../../components/_dashboard/app/CreateChannelForm';
 import GroupMenuSection, { getConfigForChannel } from '../../components/GroupMenuSection';
+import { fetchMessagesThunk } from '../../redux/slices/messages';
 import { IUser } from '../../types/user';
 
 // ----------------------------------------------------------------------
@@ -48,9 +53,17 @@ DashboardSidebar.propTypes = {
   onCloseSidebar: PropTypes.func,
 };
 
+const scrollToBottomOfMessages = () => {
+  setTimeout(() => {
+    const objDiv = (document.getElementById('screen-message') as any) || { scrollTop: 0, scrollHeight: 0 };
+    objDiv.scrollTop = objDiv?.scrollHeight || null;
+  }, 700);
+};
+
 export default function DashboardSidebar({ isOpenSidebar, onCloseSidebar }: { [name: string]: any }) {
   const { pathname } = useLocation();
-  const { user } = useUserConnected();
+  const { id } = useParams();
+  const { user, listenTo, clearListeners } = useUserConnected();
   const gqlClient = useApolloClient();
   const { openModal, closeModal } = useModal();
   const dispatch = useDispatch();
@@ -59,11 +72,33 @@ export default function DashboardSidebar({ isOpenSidebar, onCloseSidebar }: { [n
     channelLoading: channels.loading,
     users: app.users || [],
   }));
+  async function handleRealtimeNewMessage() {
+    console.log(id);
+    if (id) {
+      await dispatch(fetchMessagesThunk({ graphql: gqlClient, channelId: id }));
+      scrollToBottomOfMessages();
+    }
+  }
   useEffect(() => {
     if (channels.length === 0) {
       dispatch(fetchChannelsAsync({ graphql: gqlClient, userId: user?.id || 0 }));
     }
   }, []);
+
+  useEffect(() => {
+    clearListeners('/channel/*');
+    if (channels.length > 0) {
+      listenTo('/channel/*', handleRealtimeNewMessage);
+    }
+    setTimeout(() => {
+      scrollToBottomOfMessages();
+    }, 500);
+
+    return () => {
+      clearListeners();
+    };
+  }, [channels, id]);
+
   useEffect(() => {
     if (users.length === 0) {
       dispatch(fetchUsersAsync({ graphql: gqlClient }));

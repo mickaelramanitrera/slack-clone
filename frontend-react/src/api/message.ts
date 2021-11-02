@@ -5,7 +5,7 @@ export const fetchMessages = async ({ graphql, channelId }: IFetchMessageParams)
   const results = await graphql.query({
     query: gql`
       query FetchMessages($whereFilter: JSON) {
-        messages(where: $whereFilter) {
+        messages(where: $whereFilter, sort: "created_at") {
           id
           content
           from {
