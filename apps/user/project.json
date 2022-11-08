@@ -32,7 +32,9 @@
     "serve": {
       "executor": "@nrwl/js:node",
       "options": {
-        "buildTarget": "user:build"
+        "buildTarget": "user:build",
+        "inspect": true,
+        "port": 9229
       },
       "configurations": {
         "production": {
