@@ -1,6 +1,6 @@
 /* eslint-disable */
 export default {
-  displayName: 'core-api',
+  displayName: 'thread',
   preset: '../../jest.preset.js',
   globals: {
     'ts-jest': {
@@ -12,5 +12,5 @@ export default {
     '^.+\\.[tj]s$': 'ts-jest'
   },
   moduleFileExtensions: ['ts', 'js', 'html'],
-  coverageDirectory: '../../coverage/packages/core-api'
+  coverageDirectory: '../../coverage/apps/thread'
 };

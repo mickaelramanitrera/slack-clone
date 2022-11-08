@@ -1,4 +1,4 @@
-# Serve core api nest js app
-serve-core-api:
-	npx nx serve core-api
-.PHONY: serve-core-api
+# Serve all services nest js app
+service.serve.all:
+	npx nx run-many --target=serve
+.PHONY: service.serve.all
