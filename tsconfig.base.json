@@ -14,7 +14,10 @@
     "skipLibCheck": true,
     "skipDefaultLibCheck": true,
     "baseUrl": ".",
-    "paths": {}
+    "paths": {
+      "@slack-clone/kernel": ["libs/kernel/src/index.ts"],
+      "@slack-clone/util-types": ["libs/util-types/src/index.ts"]
+    }
   },
   "exclude": ["node_modules", "tmp"]
 }

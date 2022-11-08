@@ -54,7 +54,7 @@
   },
   "workspaceLayout": {
     "appsDir": "apps",
-    "libsDir": "apps"
+    "libsDir": "libs"
   },
   "defaultProject": "thread"
 }
