@@ -56,5 +56,5 @@
     "appsDir": "apps",
     "libsDir": "apps"
   },
-  "defaultProject": "core-api"
+  "defaultProject": "thread"
 }
