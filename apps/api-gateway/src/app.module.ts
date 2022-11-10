@@ -10,6 +10,7 @@ import { ThreadInternalService } from './app/infrastructure/services/threadInter
 import { getControllers } from './app/infrastructure/controllers';
 import { UserService } from './app/application/services/user.service';
 import { UserInternalService } from './app/infrastructure/services/userInternal.service';
+import { RealtimeGateway } from './app/infrastructure/gateway/realtime.gateway';
 
 class BaseModuleFactory {
   static create(imports: any[], providers: any[], controllers: any[]) {
@@ -51,7 +52,8 @@ class BaseModuleFactory {
       {
         provide: UserService,
         useClass: UserInternalService
-      }
+      },
+      RealtimeGateway
     ],
     []
   )
