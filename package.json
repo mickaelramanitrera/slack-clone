@@ -36,6 +36,7 @@
     "@nestjs/microservices": "^9.2.0",
     "@nestjs/platform-express": "^9.0.0",
     "dayjs": "^1.11.6",
+    "nats": "^2.9.0",
     "reflect-metadata": "^0.1.13",
     "rxjs": "^7.0.0",
     "tslib": "^2.3.0"
