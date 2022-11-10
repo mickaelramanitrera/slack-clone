@@ -28,8 +28,9 @@ export class MicroserviceFactory {
       }
     });
     await app.listen();
-    Logger.log(
-      `🚀 ${this.options.name} microservice is running using transporter at : nats://${this.options.host}:${this.options.port}`
+    const logger = new Logger('MicroserviceFactory');
+    logger.log(
+      `🚀🦠🎧 ${this.options.name} microservice is running using transporter at : nats://${this.options.host}:${this.options.port}`
     );
   }
 }

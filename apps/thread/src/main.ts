@@ -1,14 +1,18 @@
 import { AppModule } from './app.module';
-import { Domains, MicroserviceFactory } from '@slack-clone/kernel';
+import { Domains, MicroserviceFactory, getResolvedConfig } from '@slack-clone/kernel';
+import config from './config';
 
-const host = process.env.THREAD_HOST || 'localhost';
-const port = Number(process.env.NATS_PORT) || 4222;
+async function bootstrap() {
+  const { host, port } = await getResolvedConfig(config, 'nats');
 
-const microService = MicroserviceFactory.create(AppModule, {
-  host,
-  port,
-  queue: Domains.thread,
-  name: Domains.thread
-});
+  const microService = MicroserviceFactory.create(AppModule, {
+    host,
+    port,
+    queue: Domains.thread,
+    name: Domains.thread
+  });
 
-microService.start();
+  await microService.start();
+}
+
+bootstrap();
