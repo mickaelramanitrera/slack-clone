@@ -11,7 +11,16 @@ interface ThreadMessageProps {
   subThreadId: Nullable<Uuid>;
 }
 
-export class ThreadMessage extends DomainEntity<ThreadMessageProps> {
+enum ThreadMessageUpdatableFiedls {
+  author = 'author',
+  content = 'content',
+  deletedAt = 'deletedAt',
+  updatedAt = 'updatedAt',
+  threadId = 'threadId',
+  subThreadId = 'subThreadId'
+}
+
+export class ThreadMessage extends DomainEntity<ThreadMessageProps, ThreadMessageUpdatableFiedls> {
   private constructor(props: ThreadMessageProps, id?: Uuid) {
     super(props, id);
   }

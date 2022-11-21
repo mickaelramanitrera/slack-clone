@@ -8,7 +8,14 @@ interface ThreadMemberProps {
   role: ThreadMemberRole;
 }
 
-export class ThreadMember extends DomainEntity<ThreadMemberProps> {
+enum ThreadMemberUpdatableFields {
+  name = 'name',
+  userId = 'userId',
+  threadId = 'threadId',
+  role = 'role'
+}
+
+export class ThreadMember extends DomainEntity<ThreadMemberProps, ThreadMemberUpdatableFields> {
   private constructor(props, id?: Uuid) {
     super(props, id);
   }

@@ -5,6 +5,7 @@ export const Commands = {
     greet: { cmd: 'greet', domain: Domains.thread }
   },
   [Domains.user]: {
-    greet: { cmd: 'greet', domain: Domains.user }
+    greet: { cmd: 'greet', domain: Domains.user },
+    count: { cmd: 'count', domain: Domains.user }
   }
 };

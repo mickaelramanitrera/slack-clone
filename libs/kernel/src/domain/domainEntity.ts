@@ -1,10 +1,11 @@
 import { Uuid } from './uuid';
 
-export abstract class DomainEntity<T> {
+export abstract class DomainEntity<T, F> {
   private readonly identifier: Uuid;
   private readonly createdAt?: Date;
+  public updatedFields: Set<F> = new Set<F>();
 
-  public static isEntity(v: any): v is DomainEntity<any> {
+  public static isEntity(v: any): v is DomainEntity<any, any> {
     return v instanceof DomainEntity;
   }
 
@@ -17,5 +18,9 @@ export abstract class DomainEntity<T> {
 
   get id(): Uuid {
     return this.identifier;
+  }
+
+  setFieldUpdated(fieldName: F) {
+    this.updatedFields.add(fieldName);
   }
 }
