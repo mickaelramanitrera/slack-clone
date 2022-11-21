@@ -49,17 +49,31 @@ interface MessagesProps {
 
 const MessagesList: React.FC<MessagesProps> = ({
   messages
-}) => (
-  <>
-    {messages.map((message) => (
-      <MessageItem
-        author={message.author}
-        content={message.content}
-        isUser={message.isUser}
-        key={message.id}
-      />
-    ))}
-  </>
-);
+}) => {
+  const bottomRef =
+    React.useRef<HTMLDivElement>(null);
+
+  React.useEffect(() => {
+    if (messages.length) {
+      bottomRef.current?.scrollIntoView({
+        behavior: 'smooth'
+      });
+    }
+  }, [messages]);
+
+  return (
+    <>
+      {messages.map((message) => (
+        <MessageItem
+          author={message.author}
+          content={message.content}
+          isUser={message.isUser}
+          key={message.id}
+        />
+      ))}
+      <div ref={bottomRef} />
+    </>
+  );
+};
 
 export default MessagesList;
